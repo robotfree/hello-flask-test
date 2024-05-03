@@ -49,6 +49,9 @@ ingress:
       - "hello-flask.onexidp.com"
     secretName: "tls-secret" 
 
+db:
+  enabled: false
+
 letsencrypt:
   enabled: true
   email: "aram@ideatolife.me"
