@@ -1,0 +1,76 @@
+replicaCount: 3
+
+image:
+  repository: robotfree/hello-flask
+  tag: "latest"
+  pullPolicy: Always
+
+service:
+  type: ClusterIP
+  port: 9001
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+resources:
+  limits:
+    cpu: "500"
+  requests:
+    cpu: "250m"
+
+tolerations:
+  - key: dedicated
+    value: apps
+    operator: Equal
+    effect: NoSchedule
+
+autoscaling:
+  enabled: true
+  minReplicas: 3
+  maxReplicas: 6
+  targetCPUUtilizationPercentage: 60
+
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations:
+    cert-manager.io/issuer: "letsencrypt-prod"
+
+  hosts:
+    - host: "hello-flask.onexidp.com"
+      paths:
+        - path: "/"
+          pathType: Prefix
+
+  tls:
+  - hosts:
+      - "hello-flask.onexidp.com"
+    secretName: "tls-secret" 
+
+letsencrypt:
+  enabled: true
+  email: "aram@ideatolife.me"
+
+db:
+  enabled: true
+
+livenessProbe:
+  httpGet:
+    path: /health
+    port: 9001
+  initialDelaySeconds: 15
+  periodSeconds: 10
+  failureThreshold: 3
+  timeoutSeconds: 3
+
+readinessProbe:
+  httpGet:
+    path: /health
+    port: 9001
+  initialDelaySeconds: 15
+  periodSeconds: 10
+  failureThreshold: 3
+  timeoutSeconds: 3
+
