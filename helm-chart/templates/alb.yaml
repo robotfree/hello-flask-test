@@ -1,0 +1,31 @@
+{{- if .Values.alb.enabled -}}
+apiVersion: networking.k8s.io/v1 
+kind: Ingress 
+metadata:
+  name: aws-alb-ingress-{{ .Values.alb.host }}
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/healthcheck-path: /
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS":443}, {"HTTP":80}]'
+    alb.ingress.kubernetes.io/ssl-policy: ELBSecurityPolicy-TLS13-1-2-2021-06
+    alb.ingress.kubernetes.io/ssl-redirect: '443'
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:eu-west-1:696960135893:certificate/845df584-388a-48cc-92e3-c018950c3234
+    alb.ingress.kubernetes.io/wafv2-acl-arn: arn:aws:wafv2:eu-west-1:696960135893:regional/webacl/waf-dev-onexidp/93a97625-5d73-4882-888e-30a2a026f6e7
+    alb.ingress.kubernetes.io/inbound-cidrs: 0.0.0.0/0
+    external-dns.alpha.kubernetes.io/hostname: {{ .Values.alb.host }}.onexidp.com
+spec:
+  ingressClassName: alb
+  rules:
+    - host: {{ .Values.alb.host }}.onexidp.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "helm-chart.fullname" . }}
+                port:
+                  number: {{ .Values.service.port -}}
+{{- end }}

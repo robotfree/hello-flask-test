@@ -32,8 +32,12 @@ autoscaling:
   maxReplicas: 6
   targetCPUUtilizationPercentage: 60
 
-ingress:
+alb:
   enabled: true
+  host: hello-flask-test
+
+ingress:
+  enabled: false
   className: "nginx"
   annotations:
     cert-manager.io/issuer: "letsencrypt-prod"
@@ -53,7 +57,7 @@ db:
   enabled: false
 
 letsencrypt:
-  enabled: true
+  enabled: false
   email: "aram@ideatolife.me"
 
 livenessProbe:
