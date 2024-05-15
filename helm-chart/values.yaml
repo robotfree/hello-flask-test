@@ -56,6 +56,11 @@ ingress:
 db:
   enabled: false
 
+s3: 
+  enabled: true
+  bucket: hello-flask-test-4
+  region: eu-west-1
+
 letsencrypt:
   enabled: false
   email: "aram@ideatolife.me"
